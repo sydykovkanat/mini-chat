@@ -83,7 +83,7 @@ export const Chat: React.FC = () => {
                 </motion.div>
               ))
             ) : (
-              <small className={'text-muted-foreground absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2'}>
+              <small className={'text-muted-foreground absolute left-1/2 mt-20 w-60 text-center -translate-x-1/2'}>
                 No messages yet. Send a message to start the conversation.
               </small>
             )}

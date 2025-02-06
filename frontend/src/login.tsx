@@ -19,7 +19,7 @@ export const Login: React.FC = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-full max-w-sm space-y-2'}
+        className={'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-full space-y-2 px-4 max-w-sm'}
       >
         <FormField
           control={form.control}
