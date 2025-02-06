@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import { KeyboardEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 
-const socket = io.connect('http://localhost:3002');
+const socket = io.connect('http://localhost:8001');
 
 export const useChat = () => {
   const { name } = useAuth();
