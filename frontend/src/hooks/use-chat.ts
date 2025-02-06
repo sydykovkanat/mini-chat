@@ -1,16 +1,18 @@
 import { useForm } from 'react-hook-form';
 import io from 'socket.io-client';
 import { KeyboardEvent, useEffect, useState } from 'react';
+import { useAuth } from '@/context/auth-context';
 
 const socket = io.connect('http://localhost:3002');
 
 export const useChat = () => {
-  const [receiveMessage, setReceiveMessage] = useState('');
+  const { name } = useAuth();
+  const [messages, setMessages] = useState<{ message: string; name: string }[]>([]);
 
   useEffect(() => {
-    socket.on('messages', (message: { message: { message: string } }) => {
-      console.log(message.message.message);
-      setReceiveMessage(message.message.message);
+    socket.on('messages', (message: { message: { message: string; name: string } }) => {
+      const newMessage = message.message;
+      setMessages((prevMessages) => [...prevMessages, newMessage]); // Append new message
     });
 
     return () => {
@@ -30,6 +32,7 @@ export const useChat = () => {
   const onSubmit = async (data: { message: string }) => {
     socket.emit('messages', {
       message: data.message,
+      name,
     });
     console.log('Message sent:', data.message);
     form.reset();
@@ -42,5 +45,5 @@ export const useChat = () => {
     }
   };
 
-  return { form, onSubmit, receiveMessage, handleKeyDown };
+  return { form, onSubmit, messages, handleKeyDown };
 };
