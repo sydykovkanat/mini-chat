@@ -16,7 +16,7 @@ import { useChat } from '@/hooks/use-chat';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export const App: React.FC = () => {
-  const { form, onSubmit } = useChat();
+  const { form, onSubmit, receiveMessage, handleKeyDown } = useChat();
 
   return (
     <main className={'container mx-auto px-4 my-2'}>
@@ -35,7 +35,13 @@ export const App: React.FC = () => {
                   <span className={'text-red-500'}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <Textarea placeholder={'Type your message here'} className={'w-full'} {...field} />
+                  <Textarea
+                    placeholder={'Type your message here'}
+                    className={'w-full'}
+                    onKeyDown={handleKeyDown}
+                    rows={5}
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription>Type your message here and send it to the chat.</FormDescription>
                 <FormMessage />
@@ -52,11 +58,7 @@ export const App: React.FC = () => {
           <CardContent className={'p-1 flex gap-2'}>
             <UserAvatar name={'John Doe'} />
 
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias atque blanditiis ea exercitationem minus
-              nesciunt placeat possimus qui repudiandae? Ipsam iste neque obcaecati optio sapiente. Dolor eaque natus
-              repudiandae veniam?
-            </p>
+            <p>{receiveMessage || 'No messages yet. Send a message to start the conversation.'}</p>
           </CardContent>
         </Card>
       </section>
