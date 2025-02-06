@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import io from 'socket.io-client';
 import { KeyboardEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
+import { toast } from 'sonner';
 
 const socket = io.connect('http://149.102.129.56:8001');
 
@@ -12,11 +13,19 @@ export const useChat = () => {
   useEffect(() => {
     socket.on('messages', (message: { message: { message: string; name: string } }) => {
       const newMessage = message.message;
-      setMessages((prevMessages) => [...prevMessages, newMessage]); // Append new message
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    socket.on('user-connected', (username: { username: string }) => {
+      toast.info(`${username.username} has connected to the chat`, {
+        position: 'top-center',
+        className: 'border',
+      });
     });
 
     return () => {
       socket.off('messages');
+      socket.off('user-connected');
     };
   }, []);
 

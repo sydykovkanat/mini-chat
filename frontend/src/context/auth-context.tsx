@@ -1,4 +1,5 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
+import io from 'socket.io-client';
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -6,6 +7,8 @@ interface AuthContextType {
   logout: () => void;
   name: string;
 }
+
+const socket = io.connect('http://149.102.129.56:8001');
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -16,6 +19,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = (userName: string) => {
     setIsLoggedIn(true);
     setName(userName);
+    socket.emit('user-connected', userName);
   };
 
   const logout = () => {

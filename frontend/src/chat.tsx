@@ -74,7 +74,7 @@ export const Chat: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                 >
-                  <Card className={'shadow-none max-w-xl'}>
+                  <Card className={'shadow-none max-w-xl bg-secondary/50'}>
                     <CardContent className={'p-1 flex gap-2 items-center'}>
                       <UserAvatar name={message.name} />
                       <p className={'text-sm'}>{message.message}</p>
