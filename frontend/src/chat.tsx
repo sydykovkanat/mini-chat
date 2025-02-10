@@ -17,10 +17,26 @@ import {
 import { useChat } from '@/hooks/use-chat';
 import { useAuth } from '@/context/auth-context';
 import { AnimatePresence, motion } from 'framer-motion';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import { Loader } from 'lucide-react';
 
 export const Chat: React.FC = () => {
-  const { form, onSubmit, messages, handleKeyDown } = useChat();
+  const { form, onSubmit, messages, handleKeyDown, isLoading } = useChat();
   const { name } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className={'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-center'}>
+        <Loader className={'size-5 text-muted-foreground animate-spin mx-auto'} />
+        <small className={'text-muted-foreground text-center block leading-[1.3] mt-2'}>
+          Загрузка сообщений 🚀
+          <br />
+          Спасибо за ожидание 😄
+        </small>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -70,14 +86,21 @@ export const Chat: React.FC = () => {
               messages.map((message, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, y: 10, scaleY: 0 }}
+                  animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                  exit={{ opacity: 0, scaleY: 0 }}
                 >
                   <Card className={'shadow-none max-w-xl bg-secondary/50'}>
                     <CardContent className={'p-1 flex gap-2 items-center'}>
                       <UserAvatar name={message.name} />
-                      <p className={'text-sm'}>{message.message}</p>
+                      <div className={'w-full'}>
+                        <p className={'text-sm'}>{message.message}</p>
+                        <small className={'block ml-auto text-right pr-1 text-xs text-muted-foreground'}>
+                          {format(message.createdAt, 'PPP hh:mm', {
+                            locale: ru,
+                          })}
+                        </small>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -98,11 +121,12 @@ const UserAvatar: React.FC<{ name: string }> = ({ name }) => {
   const initials = name
     .split(' ')
     .map((n) => n[0])
-    .join('');
+    .join('')
+    .slice(0, 3);
 
   return (
-    <Avatar className={'border rounded-sm size-7'}>
-      <AvatarFallback className={'rounded-sm bg-gradient-to-r from-zinc-900 to-zinc-800 text-white text-sm'}>
+    <Avatar className={'border rounded-sm size-9'}>
+      <AvatarFallback className={'rounded-sm bg-gradient-to-r uppercase from-zinc-900 to-zinc-800 text-muted text-sm'}>
         {initials}
       </AvatarFallback>
     </Avatar>

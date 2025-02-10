@@ -3,6 +3,7 @@ import { Chat } from '@/chat';
 import { Login } from '@/login';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { Toaster } from 'sonner';
+import { Particles } from '@/components/ui/particles';
 
 export const App: React.FC = () => {
   return (
@@ -16,13 +17,21 @@ const Main: React.FC = () => {
   const { isLoggedIn } = useAuth();
 
   if (!isLoggedIn) {
-    return <Login />;
+    return (
+      <>
+        <Particles className={'fixed h-screen'} />
+        <Login />
+      </>
+    );
   }
 
   return (
-    <main className={'max-w-md mx-auto border-x min-h-svh'}>
-      <Chat />
-      <Toaster />
-    </main>
+    <>
+      <Particles className={'fixed h-screen'} />
+      <main className={'max-w-md mx-auto border-x min-h-svh'}>
+        <Chat />
+        <Toaster />
+      </main>
+    </>
   );
 };

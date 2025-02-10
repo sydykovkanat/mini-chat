@@ -3,17 +3,49 @@ import io from 'socket.io-client';
 import { KeyboardEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
+import axios from 'axios';
+
+interface Message {
+  id: string;
+  createdAt: string;
+  message: string;
+  name: string;
+}
 
 const socket = io.connect('http://149.102.129.56:8001');
 
 export const useChat = () => {
   const { name } = useAuth();
-  const [messages, setMessages] = useState<{ message: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    socket.on('messages', (message: { message: { message: string; name: string } }) => {
+    const getInitialMessages = async () => {
+      try {
+        setIsLoading(true);
+        const { data } = await axios.get<Message[]>('http://149.102.129.56:8000/chat/messages');
+
+        setMessages(data.reverse());
+      } catch (err) {
+        console.error(err);
+        toast?.error('Произошла ошибка при загрузке сообщений', {
+          description: 'Страница будет перезагружена через 5 секунд',
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void getInitialMessages();
+  }, []);
+
+  useEffect(() => {
+    socket.on('messages', (message: { message: Message }) => {
       const newMessage = message.message;
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => [newMessage, ...prevMessages]);
     });
 
     socket.on('user-connected', (username: { username: string }) => {
@@ -42,8 +74,8 @@ export const useChat = () => {
     socket.emit('messages', {
       message: data.message,
       name,
+      createdAt: new Date().toISOString(),
     });
-    console.log('Message sent:', data.message);
     form.reset();
   };
 
@@ -54,5 +86,5 @@ export const useChat = () => {
     }
   };
 
-  return { form, onSubmit, messages, handleKeyDown };
+  return { form, onSubmit, messages, handleKeyDown, isLoading };
 };
